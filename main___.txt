@@ -1,0 +1,266 @@
+# from flask import Flask, render_template, request
+# from flask import Flask, render_template, request
+# from nltk.tokenize import RegexpTokenizer
+# from nltk.stem.porter import PorterStemmer
+# from nltk.corpus import stopwords
+# from sklearn.feature_extraction.text import CountVectorizer
+# from sklearn.naive_bayes import MultinomialNB
+# # from nltk.tokenize import RegexpTokenizer
+# # from nltk.stem.porter import PorterStemmer
+# # from nltk.corpus import stopwords
+# # import sentiment
+
+# # Download stopwords if not already downloaded
+# import nltk
+# nltk.download('stopwords')
+
+# # Define the getCleanedText function here if it's not defined in a separate module
+# def getCleanedText(text):
+#     # import nltk
+#     nltk.download('stopwords')
+#     tokenizer = RegexpTokenizer(r"\w+")
+#     en_stopwords = set(stopwords.words('english'))
+#     ps = PorterStemmer()
+#     text = text.lower()
+#     # tokenizing
+#     tokens = tokenizer.tokenize(text)
+#     new_tokens = [token for token in tokens if token not in en_stopwords]
+#     stemmed_tokens = [ps.stem(tokens) for tokens in new_tokens]
+#     clean_text = " ".join(stemmed_tokens)
+#     return clean_text
+
+# # Load your trained model (mn) and vectorizer (cv) here if not already loaded
+# mn = MultinomialNB()
+# cv = CountVectorizer(ngram_range=(1, 2))
+# # Your Flask routes and web application logic go here
+
+# # Your sentiment analysis code goes here
+
+# app = Flask(__name__)
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')  # Display the form page
+
+# @app.route('/analyze', methods=['POST'])
+# def analyze():
+#     print("\n entered here\n")
+#     user_input = request.form['text']  # Get user's input from the form  # Get user's input from the form
+#     cleaned_input = getCleanedText(user_input)  # Preprocess the input
+#     vectorized_input = cv.transform([cleaned_input]).toarray()  # Vectorize the input
+#     sentiment_prediction = mn.predict(vectorized_input)[0]
+#     sentiment_score = 1 if sentiment_prediction == "positive" else 0
+#     sentiment_category = "Positive" if sentiment_score == 1 else "Negative"
+#     print("prediction done")
+#     # Make the prediction
+#     # Use your sentiment analysis code to analyze user_input
+#     # Calculate sentiment score and category
+#     # Render a results page with the sentiment analysis results
+#     return render_template('results.html', sentiment_score=sentiment_score, sentiment_category=sentiment_category)
+
+# if _name_ == '__main__':
+#     app.run(debug=True)
+
+f# from flask import Flask, render_template, request
+# from flask import Flask, render_template, request
+# from nltk.tokenize import RegexpTokenizer
+# from nltk.stem.porter import PorterStemmer
+# from nltk.corpus import stopwords
+# from sklearn.feature_extraction.text import CountVectorizer
+# from sklearn.naive_bayes import MultinomialNB
+# # from nltk.tokenize import RegexpTokenizer
+# # from nltk.stem.porter import PorterStemmer
+# # from nltk.corpus import stopwords
+# # import sentiment
+
+# # Download stopwords if not already downloaded
+# import nltk
+# nltk.download('stopwords')
+
+# # Define the getCleanedText function here if it's not defined in a separate module
+# def getCleanedText(text):
+#     # import nltk
+#     nltk.download('stopwords')
+#     tokenizer = RegexpTokenizer(r"\w+")
+#     en_stopwords = set(stopwords.words('english'))
+#     ps = PorterStemmer()
+#     text = text.lower()
+#     # tokenizing
+#     tokens = tokenizer.tokenize(text)
+#     new_tokens = [token for token in tokens if token not in en_stopwords]
+#     stemmed_tokens = [ps.stem(tokens) for tokens in new_tokens]
+#     clean_text = " ".join(stemmed_tokens)
+#     return clean_text
+
+# # Load your trained model (mn) and vectorizer (cv) here if not already loaded
+# mn = MultinomialNB()
+# cv = CountVectorizer(ngram_range=(1, 2))
+# # Your Flask routes and web application logic go here
+
+# # Your sentiment analysis code goes here
+
+# app = Flask(__name__)
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')  # Display the form page
+
+# @app.route('/analyze', methods=['POST'])
+# def analyze():
+#     print("\n entered here\n")
+#     user_input = request.form['text']  # Get user's input from the form  # Get user's input from the form
+#     cleaned_input = getCleanedText(user_input)  # Preprocess the input
+#     vectorized_input = cv.transform([cleaned_input]).toarray()  # Vectorize the input
+#     sentiment_prediction = mn.predict(vectorized_input)[0]
+#     sentiment_score = 1 if sentiment_prediction == "positive" else 0
+#     sentiment_category = "Positive" if sentiment_score == 1 else "Negative"
+#     print("prediction done")
+#     # Make the prediction
+#     # Use your sentiment analysis code to analyze user_input
+#     # Calculate sentiment score and category
+#     # Render a results page with the sentiment analysis results
+#     return render_template('results.html', sentiment_score=sentiment_score, sentiment_category=sentiment_category)
+
+# if _name_ == '__main__':
+#     app.run(debug=True)
+
+from flask import Flask, render_template, request
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem.porter import PorterStemmer
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.svm import SVC
+import nltk
+import joblib
+
+# Download stopwords if not already downloaded
+nltk.download('stopwords')
+
+app = Flask(__name__)
+
+# Define the getCleanedText function here if it's not defined in a separate module
+def getCleanedText(text):
+    tokenizer = RegexpTokenizer(r"\w+")
+    en_stopwords = set(stopwords.words('english'))
+    ps = PorterStemmer()
+    text = text.lower()
+
+    # Extended list of negations and intensifiers
+    # Unique negations for movie reviews
+negations = [
+    "worst","no", "lack", "lacks", "lacked", "nothing", "not", "barely", "hardly", "never", "neither", 
+    "none", "rarely", "scarcely", "without", "lacking", "cannot", "can't", "didn't", "doesn't", 
+    "isn't", "wasn't", "weren't", "ain't", "hardly", "rarely", "seldom", "aint", "nowhere", 
+    "lack", "lacked", "lacking", "lacks", "missing", "devoid", "void", "absence", "absent", 
+    "not much", "not very", "far from", "never been", "never have", "never had", "hadn't", 
+    "hasn't", "haven't", "isnt", "wasnt", "wasnt", "werent", "without a doubt", "no chance",
+    "little", "poor", "zero", "not good", "not great", "not well", "no good", "no great", "no well",
+    "scarcely", "hardly", "neither", "nor", "rarely", "barely", "hardly", "seldom", "hardly a",
+    "not exactly", "not particularly", "not especially", "notably", "not much of a", "not all that",
+    "not that much", "not that good", "not that great", "not that well", "not a fan of", "not fond of",
+    "not impressed", "not happy with", "not satisfied", "not pleased", "not recommend", "not enjoyable",
+    "not entertaining", "not engaging", "not interesting", "not worth", "not worth it", "not worth the hype",
+    "not up to", "not up to par", "not on par", "not on the same level", "not what I expected", "not what I was hoping for",
+    "not my cup of tea", "not for me", "not my type", "not my taste", "not my style", "not in the same league",
+    "not my thing", "not my kind of", "not my style of", "not up my alley", "not my scene", "not to my liking"
+]
+
+# Unique intensifiers for movie reviews
+intensifiers = [
+    "very", "extremely", "highly", "intensely", "incredibly", "totally", "absolutely", "seriously", 
+    "profoundly", "exceedingly", "remarkably", "immensely", "excessively", "vastly", "especially", 
+    "really", "so", "remarkably", "particularly", "incredibly", "exceptionally", "truly", "unbelievably", 
+    "dreadfully", "exceedingly", "greatly", "mightily", "extraordinarily", "strikingly", "outstandingly", 
+    "overly", "overwhelmingly", "overbearingly", "intolerably", "decidedly", "unusually", "amazingly", 
+    "astonishingly", "astoundingly", "wonderfully", "terribly", "awfully", "painfully", "aggressively", 
+    "severely", "frightfully", "staggeringly", "intensely", "deeply", "completely", "exceptionally", 
+    "thoroughly", "considerably", "significantly", "substantially", "excessively", "extra", "most", 
+    "utterly", "quite", "totally", "definitely", "absolutely", "positively", "unquestionably", 
+    "undeniably", "decidedly", "unmistakably", "surely", "unusually", "truly", "fully", "well", 
+    "utterly", "eminently", "most certainly", "perfectly", "downright", "unreservedly", "unmitigatedly", 
+    "effusively", "profusely", "entirely", "plainly", "exactly", "squarely", "dead", "awfully", 
+    "frightfully", "terrifically", "thoroughgoingly", "thoroughly", "all", "mighty", "hellishly", 
+    "jolly", "monster", "real", "major", "right", "bloody", "jolly", "beyond", "just", "full", "outright",
+    "hugely", "damn", "awful", "ever", "thumping", "howling", "passing", "way", "considerably", "impressive"
+]
+
+    # Handle negations and intensifiers
+    for negation in negations:
+        text = text.replace(f"{negation} ", f"{negation}_")
+    for intensifier in intensifiers:
+        text = text.replace(f"{intensifier} ", f"{intensifier}_")
+
+    # tokenizing
+    tokens = tokenizer.tokenize(text)
+    new_tokens = [token for token in tokens if token not in en_stopwords]
+    stemmed_tokens = [ps.stem(token) for token in new_tokens]
+    clean_text = " ".join(stemmed_tokens)
+    return clean_text
+
+# Sample positive and negative phrases
+# Additional positive phrases
+positive_phrases += [
+    "A cinematic masterpiece, thoroughly impressed!",
+    "The best movie I've seen in a while, a must-see.",
+    "Kudos to the entire team for such an amazing film.",
+    "Perfect in every aspect, can't find a flaw!",
+    "An excellent portrayal of emotions and storytelling.",
+    "Absolutely fantastic, exceeded all expectations.",
+    "A delightful film that leaves you with a smile.",
+    "The characters were so well-developed, felt real.",
+    "The movie was heartwarming and genuinely touching.",
+    "A gem of a movie, deserves all the praise.",
+    "The humor throughout the film was spot on!",
+    "A feel-good movie that leaves you in high spirits.",
+]
+
+# Additional negative phrases
+negative_phrases += [
+    "Horrible movie, a complete waste of money.",
+    "Dreadful acting, couldn't bear to watch.",
+    "Regret ever buying a ticket for this film.",
+    "The hype was unwarranted, highly disappointing.",
+    "Poorly executed film, lacked creativity.",
+    "A disaster in terms of plot and character development.",
+    "The dialogue delivery was cringeworthy.",
+    "Avoid this movie at all costs, not worth it.",
+    "An utter letdown, expected much more.",
+    "Left the theater with a feeling of immense dissatisfaction.",
+    "The screenplay was a mess, couldn't follow the story.",
+    "A snooze-fest from start to finish, no excitement.",
+]
+
+# Shuffle the lists to mix original and additional phrases
+random.shuffle(positive_phrases)
+random.shuffle(negative_phrases)
+
+# Initialize training data
+X_train = positive_phrases + negative_phrases
+y_train = [1] * len(positive_phrases) + [0] * len(negative_phrases)  # 1 for positive, 0 for negative
+
+# Load your trained model (svc) and vectorizer (cv) here if not already loaded
+cv = joblib.load('count_vectorizer.pkl')
+svc = joblib.load('svm_model.pkl')
+
+@app.route('/')
+def index():
+    return render_template('index.html')  # Display the form page
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    global X_train, y_train  # Ensure these variables are used from the global scope
+    user_input = request.form['text']  # Get user's input from the form
+    cleaned_input = getCleanedText(user_input)  # Preprocess the input
+    vectorized_input = cv.transform([cleaned_input]).toarray()  # Vectorize the input
+    sentiment_prediction = svc.predict(vectorized_input)[0]
+
+    # Update the prediction logic
+    if sentiment_prediction == 1:
+        sentiment_category = "Positive"
+    else:
+        sentiment_category = "Negative"
+
+    return render_template('results.html', sentiment_score=sentiment_prediction, sentiment_category=sentiment_category)
+
+if _name_ == '__main__':
+    app.run(debug=True)
